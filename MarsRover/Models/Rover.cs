@@ -13,7 +13,7 @@ namespace MarsRover.Models
 
         public Rover()
         {
-            Coordinates = new int[2] { 1, 1 };
+            Coordinates = new int[2] { 0, 1 };
             Direction = Directions.South;
         }
 

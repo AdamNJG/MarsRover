@@ -19,7 +19,6 @@ namespace MarsRover.Forms
         public void StartForm()
         {
             Application.EnableVisualStyles();
-
              
             _form.Size = new System.Drawing.Size(250, 350);
             _form.BackColor = System.Drawing.Color.DarkGray;
