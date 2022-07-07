@@ -19,10 +19,10 @@ namespace MarsRover.Models
 
         public enum Directions
         {
-            North,
-            South,
-            East,
-            West
+            North = 1,
+            East = 2,
+            South = 3,
+            West = 4
         }
 
         public string GetDirection()

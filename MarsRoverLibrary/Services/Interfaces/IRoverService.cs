@@ -12,22 +12,21 @@ namespace MarsRover.Services
     {
         void Send(string[] instructions);
 
-        Rover GetRover(int number);
+        Rover GetRover();
 
         string SetRoverCoordinates(int distance, Rover.Directions direction);
 
-        bool CheckDirections(string input, List<Command> commands, out string error);
+        bool GetDirectionFromString(string input, Rover rover, out Directions direction);
 
         string GetStringFromDirection(Directions direction);
 
-        Directions GetDirectionFromString(string input);
 
-        bool ValidateInput(string input);
+        public bool ValidateInput(string input, out string error);
 
-        bool CheckValidMovements(List<Command> commands, out string error);
-
-        int GetRoverCount();
+        bool CheckValidMovements(List<string> commands, out string error);
 
         Rover GetTempRover(int number);
+
+        List<string> AddCommand(List<string> commands, string input, out string error);
     }
 }

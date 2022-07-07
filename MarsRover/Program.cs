@@ -19,7 +19,7 @@ public class Program
         return Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
-                services.AddTransient<MainForm>();
+                services.AddSingleton<MainForm>();
                 services.AddSingleton<IRoverService, RoverService>();
             });
             

@@ -11,7 +11,7 @@ namespace MarsRover.Services
 {
     public class RoverService : IRoverService
     {
-        public Rover[] rovers;
+        public Rover rover;
         private readonly IConfiguration _config;
         public RoverService(IConfiguration config)
         {
@@ -21,7 +21,7 @@ namespace MarsRover.Services
             {
                 size = 10;
             }
-            rovers = new Rover[] { new Rover() };
+            rover = new Rover();
         }
 
         public void Send(string[] instructions)
@@ -29,14 +29,35 @@ namespace MarsRover.Services
             Console.WriteLine("Send");
         }
 
-        public int GetRoverCount()
+        public Rover GetRover()
         {
-            return rovers.Length;
+            return rover;
         }
 
-        public Rover GetRover(int number)
+        public List<string> AddCommand(List<string> commands, string input, out string error)
         {
-            return rovers[number];
+            error = "";
+            if (commands.Count < 5)
+            {
+                if (int.TryParse(input, out int number) == false)
+                {
+                    commands.Add(input.ToLower());
+                }
+                else if (number <= 100 && number > 0)
+                {
+                    commands.Add(input);
+                }
+                else
+                {
+                    error = "Command not added, use positive numbers up to 100";
+                }
+            }
+            else
+            {
+                error = "You may only enter a maximum of 5 commands";
+            }
+
+            return commands;
         }
 
         public Rover GetTempRover(int number)
@@ -49,12 +70,14 @@ namespace MarsRover.Services
             return new Rover();
         }
 
-        public bool ValidateInput(string input)
+        public bool ValidateInput(string input, out string error)
         {
+            error = "";
             if (Int32.TryParse(input, out int distance) || input.ToLower().Contains("right") || input.ToLower().Contains("left"))
             {
                 return true;
             }
+            error = "Value entered is not a command";
             return false;
         }
 
@@ -84,46 +107,34 @@ namespace MarsRover.Services
             return "rover set";
         }
 
-        public bool CheckDirections(string input, List<Command> commands, out string error)
+        public bool GetDirectionFromString(string input, Rover rover, out Directions direction)
         {
-            string direction = "";
-            if (commands.Count > 0)
+            direction = Directions.North;
+            if (Int32.TryParse(input, out int distance))
             {
-                direction = GetStringFromDirection(commands.Last().Direction);
-            }
-            else
-            {
-                //direction = rover.GetDirection();
-            }
-            if (direction.Contains(GetStringFromDirection(Directions.South)) && input.Contains(GetStringFromDirection(Directions.North)))
-            {
-                error = "You may only may only make right or left hand turns!";
                 return false;
             }
-            if (direction.Contains(GetStringFromDirection(Directions.North)) && input.Contains(GetStringFromDirection(Directions.South)))
+
+            if (input.ToLower().Contains("right"))
             {
-                error = "You may only may only make right or left hand turns!";
-                return false;
+                direction = (int)rover.Direction == 4 ? (Directions)1 : rover.Direction + 1;
+                return true;
             }
-            if (direction.Contains(GetStringFromDirection(Directions.East)) && input.Contains(GetStringFromDirection(Directions.West)))
+            else if (input.ToLower().Contains("left"))
             {
-                error = "You may only may only make right or left hand turns!";
-                return false;
+                direction = (int)rover.Direction == 1 ? (Directions)4 : rover.Direction - 1;
+                return true;
             }
-            if (direction.Contains(GetStringFromDirection(Directions.West)) && input.Contains(GetStringFromDirection(Directions.East)))
-            {
-                error = "You may only may only make right or left hand turns!";
-                return false;
-            }
-            error = "";
-            return true;
+
+            return false;
         }
 
-        public bool CheckValidMovements(List<Command> commands, out string error)
+        public bool CheckValidMovements(List<string> commands, out string error)
         {
-            Rover tempRover = GetRover(0);
-            List<Command> removeCommands = new List<Command>();
             error = "";
+            /*Rover tempRover = GetRover(0);
+            List<Command> removeCommands = new List<Command>();
+
 
             foreach (Command command in commands)
             {
@@ -163,11 +174,9 @@ namespace MarsRover.Services
             if (String.IsNullOrEmpty(error))
             {
                 return true;
-            }
+            }*/
             return false;
         }
-
-
 
         public string GetStringFromDirection(Directions direction)
         {
@@ -182,22 +191,6 @@ namespace MarsRover.Services
                 case Directions.West:
                     return "West";
                 default: return "ERROR: no direction set";
-            }
-        }
-
-        public Directions GetDirectionFromString(string input)
-        {
-            switch (input)
-            {
-                case "North":
-                    return Directions.North;
-                case "South":
-                    return Directions.South;
-                case "East":
-                    return Directions.East;
-                case "West":
-                    return Directions.West;
-                default: return Directions.South;
             }
         }
     }
