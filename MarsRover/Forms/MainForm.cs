@@ -23,9 +23,9 @@ namespace MarsRover.Forms
             _form.Size = new System.Drawing.Size(250, 350);
             _form.BackColor = System.Drawing.Color.DarkGray;
 
-            Rover rover = _roverService.GetRover();
+            Rover rover = _roverService.GetRover(0);
 
-            Label distanceLabel = CreateLabel(5, 0 ,"Distance");
+            /*Label distanceLabel = CreateLabel(5, 0 ,"Distance");
             TextBox distance = CreateTextBox(distanceLabel.Top, distanceLabel.Right, "distanceText");
             distance.KeyDown += distance_KeyDown;
             Label directionLabel = CreateLabel(distanceLabel.Bottom + 5, 0, "Direction");
@@ -33,11 +33,13 @@ namespace MarsRover.Forms
                                     "South",
                                     "East",
                                     "West",
-                                   };
+                                   };*/
 
-            ComboBox directionBox = CreateDirectionsList(directionLabel.Top, directionLabel.Right, directions);
-            directionBox.Name = "directionBox";
-            Button addButton = CreateButton(5, directionBox.Bottom + 5, 200, "Add Command");
+
+
+            //ComboBox directionBox = CreateDirectionsList(directionLabel.Top, directionLabel.Right, directions);
+            //directionBox.Name = "directionBox";
+            Button addButton = CreateButton(5, 60, 200, "Add Command");
             addButton.Click += addButton_Click;
             Label commandCount = CreateLabel(addButton.Bottom + 5, 0, String.Format("There are {0} Commands in the Queue", _commands.Count()), 250);
             commandCount.Name = "commandLabel";
@@ -47,7 +49,7 @@ namespace MarsRover.Forms
             commandListBox.Multiline = true;
             commandListBox.Height = 85;
 
-            Rover tempRover = _roverService.GetRover();
+            Rover tempRover = _roverService.GetRover(0);
 
             Label roverLabel = CreateLabel(commandListBox.Bottom + 5, 0, String.Format("The rover is at {0}{1}, {2}", tempRover.Coordinates[0], tempRover.Coordinates[1], tempRover.GetDirection()), 250);
             roverLabel.Name = "roverLabel";
@@ -55,10 +57,11 @@ namespace MarsRover.Forms
             Button sendButton = CreateButton(5, roverLabel.Bottom + 5, 200, "Send Commands");
             sendButton.Click += sendButton_Click;
 
-            _form.Controls.Add(distanceLabel);
-            _form.Controls.Add(distance);
-            _form.Controls.Add(directionLabel);
-            _form.Controls.Add(directionBox);
+            //_form.Controls.Add(distanceLabel);
+            //_form.Controls.Add(distance);
+            //_form.Controls.Add(directionLabel);
+            //_form.Controls.Add(directionBox);
+
             _form.Controls.Add(commandListBox);
             _form.Controls.Add(addButton);
             _form.Controls.Add(commandCount);
@@ -165,7 +168,7 @@ namespace MarsRover.Forms
                 return;
             }
 
-            Rover tempRover = _roverService.GetRover();
+            Rover tempRover = _roverService.GetRover(0);
 
             Label roverLabel = (Label)_form.Controls.Find("roverLabel", true).First();
 

@@ -1,0 +1,5 @@
+C:\Users\adamg\MarsRover\MarsRover\obj\Debug\net5.0-windows\MarsRover.csproj.AssemblyReference.cache
+C:\Users\adamg\MarsRover\MarsRover\obj\Debug\net5.0-windows\MarsRover.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\adamg\MarsRover\MarsRover\obj\Debug\net5.0-windows\MarsRover.AssemblyInfoInputs.cache
+C:\Users\adamg\MarsRover\MarsRover\obj\Debug\net5.0-windows\MarsRover.AssemblyInfo.cs
+C:\Users\adamg\MarsRover\MarsRover\obj\Debug\net5.0-windows\MarsRover.csproj.CoreCompileInputs.cache
