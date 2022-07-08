@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MarsRover.Models;
 using Microsoft.Extensions.Configuration;
@@ -23,12 +24,6 @@ namespace MarsRover.Services
             }
             rover = new Rover();
         }
-
-        public void Send(string[] instructions)
-        {
-            Console.WriteLine("Send");
-        }
-
         public Rover GetRover()
         {
             return rover;
@@ -37,15 +32,18 @@ namespace MarsRover.Services
         public List<string> AddCommand(List<string> commands, string input, out string error)
         {
             error = "";
+            string pattern = @"d*m";
+            Match match = Regex.Match(input, pattern);
             if (commands.Count < 5)
             {
-                if (int.TryParse(input, out int number) == false)
+
+                if (int.TryParse(RemoveMFromCommand(input), out int number) == false)
                 {
                     commands.Add(input.ToLower());
                 }
-                else if (number <= 100 && number > 0)
+                else if (match.Success && number <= 100 && number > 0)
                 {
-                    commands.Add(input);
+                    commands.Add(number.ToString());
                 }
                 else
                 {
@@ -60,9 +58,14 @@ namespace MarsRover.Services
             return commands;
         }
 
-        public Rover GetTempRover(int number)
+        public string RemoveMFromCommand(string input)
         {
-            Rover tempRover = GetRover(number).DeepCopy();
+            return input.Split('m')[0];
+        }
+
+        public Rover GetTempRover()
+        {
+            Rover tempRover = GetRover().DeepCopy();
             if (tempRover != null)
             {
                 return tempRover;
@@ -72,44 +75,43 @@ namespace MarsRover.Services
 
         public bool ValidateInput(string input, out string error)
         {
+            string pattern = @"d*m";
+            Match match = Regex.Match(input, pattern);
             error = "";
-            if (Int32.TryParse(input, out int distance) || input.ToLower().Contains("right") || input.ToLower().Contains("left"))
+
+            if (input.ToLower().Contains(" ") == false && (match.Success && Int32.TryParse(input.Split('m')[0], out int distance) || input.ToLower().Contains("right") || input.ToLower().Contains("left")))
             {
                 return true;
             }
-            error = "Value entered is not a command";
+            error = "Value entered is not a command, only 'right', 'left' and positive integers followed by m bellow 100 allowed, no spaces";
             return false;
         }
 
-        public string SetRoverCoordinates(int distance, Rover.Directions direction)
+        public void SetRoverCoordinates(Rover rover, string command)
         {
-            /*
-            //spec says to reverse x and y from standard.
-            switch (direction)
+            if (int.TryParse(command, out int distance))
             {
-                case Rover.Directions.North:
-                    rover.Coordinates[0] -= distance;
-                    break;
-                case Rover.Directions.South:
-                    rover.Coordinates[0] += distance;
-                    break;
-                case Rover.Directions.East:
-                    rover.Coordinates[1] -= distance;
-                    break;
-                case Rover.Directions.West:
-                    rover.Coordinates[1] += distance;
-                    break;
-                default:
-                    SetRoverCoordinates(distance, rover.Direction);
-                    break;
+                switch (rover.Direction)
+                {
+                    case Directions.North:
+                        rover.SetY(rover.y - distance);
+                        break;
+                    case Directions.South:
+                        rover.SetY(rover.y + distance);
+                        break;
+                    case Directions.East:
+                        rover.SetX(rover.x + distance);
+                        break;
+                    case Directions.West:
+                        rover.SetX(rover.x - distance);
+                        break;
+                }
             }
-            rover.Direction = direction;*/
-            return "rover set";
         }
 
         public bool GetDirectionFromString(string input, Rover rover, out Directions direction)
         {
-            direction = Directions.North;
+            direction = rover.Direction;
             if (Int32.TryParse(input, out int distance))
             {
                 return false;
@@ -129,70 +131,20 @@ namespace MarsRover.Services
             return false;
         }
 
-        public bool CheckValidMovements(List<string> commands, out string error)
+        public bool CheckValidMovements(string command, Rover rover, out string error)
         {
             error = "";
-            /*Rover tempRover = GetRover(0);
-            List<Command> removeCommands = new List<Command>();
+            SetRoverCoordinates(rover, command);
 
-
-            foreach (Command command in commands)
-            {
-                switch (command.Direction)
-                {
-                    case Directions.North:
-                        tempRover.Coordinates[0] -= command.Distance;
-                        break;
-                    case Directions.South:
-                        tempRover.Coordinates[0] += command.Distance;
-                        break;
-                    case Directions.East:
-                        tempRover.Coordinates[1] += command.Distance;
-                        break;
-                    case Directions.West:
-                        tempRover.Coordinates[1] -= command.Distance;
-                        break;
-                }
-
-                if (tempRover.Coordinates[0] > 0 && tempRover.Coordinates[0] <= 100 && tempRover.Coordinates[1] > 0 && tempRover.Coordinates[1] <= 100)
-                {
-                    //rover.Coordinates = tempRover.Coordinates;
-                    //rover.Direction = command.Direction;
-                    removeCommands.Add(command);
-                }
-                else
-                {
-                    removeCommands.Add(command);
-                    error = "command would take rover out of bounds";
-                    break;
-                }
-            }
-            foreach (Command command in removeCommands)
-            {
-                commands.Remove(command);
-            }
-            if (String.IsNullOrEmpty(error))
+            if ((rover.x > 0 && rover.x < 100) && (rover.y > 0 && rover.y < 100))
             {
                 return true;
-            }*/
+            }
+            error = "A command would take the rover out of bounds, aborting";
             return false;
         }
-
-        public string GetStringFromDirection(Directions direction)
-        {
-            switch (direction)
-            {
-                case Directions.North:
-                    return "North";
-                case Directions.South:
-                    return "South";
-                case Directions.East:
-                    return "East";
-                case Directions.West:
-                    return "West";
-                default: return "ERROR: no direction set";
-            }
-        }
     }
+
+
 
 }

@@ -10,23 +10,21 @@ namespace MarsRover.Services
 {
     public interface IRoverService
     {
-        void Send(string[] instructions);
 
         Rover GetRover();
 
-        string SetRoverCoordinates(int distance, Rover.Directions direction);
-
         bool GetDirectionFromString(string input, Rover rover, out Directions direction);
 
-        string GetStringFromDirection(Directions direction);
+        bool ValidateInput(string input, out string error);
 
+        bool CheckValidMovements(string command, Rover rover, out string error);
 
-        public bool ValidateInput(string input, out string error);
-
-        bool CheckValidMovements(List<string> commands, out string error);
-
-        Rover GetTempRover(int number);
+        Rover GetTempRover();
 
         List<string> AddCommand(List<string> commands, string input, out string error);
+
+        void SetRoverCoordinates(Rover rover, string command);
+        string RemoveMFromCommand(string input);
+
     }
 }

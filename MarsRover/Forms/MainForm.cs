@@ -40,7 +40,7 @@ namespace MarsRover.Forms
             commandListBox.Multiline = true;
             commandListBox.Height = 85;
 
-            Label roverLabel = CreateLabel(commandListBox.Bottom + 5, 0, String.Format("The rover is at {0}{1}, {2}", rover.Coordinates[0], rover.Coordinates[1], rover.GetDirection()), 250);
+            Label roverLabel = CreateLabel(commandListBox.Bottom + 5, 0, String.Format("The rover is at {0}{1}, {2}", rover.x, rover.y, rover.GetDirection()), 250);
             roverLabel.Name = "roverLabel";
 
             Button sendButton = CreateButton(5, roverLabel.Bottom + 5, 200, "Send Commands");
@@ -109,6 +109,7 @@ namespace MarsRover.Forms
             if (_roverService.ValidateInput(commandText, out string ValidationError))
             {
                 _roverService.AddCommand(_commands, commandText, out string addError);
+                command.Text = "";
                 if (String.IsNullOrEmpty(addError) == false)
                 {
                     MessageBox.Show(addError);
@@ -122,19 +123,37 @@ namespace MarsRover.Forms
 
         private void sendButton_Click(object sender, EventArgs e)
         {
-            if (_roverService.GetDirectionFromString(_commands[0], _roverService.GetRover(), out Directions dir))
+            List<string> commandsToRemove = new List<string>();
+            foreach (string command in _commands)
             {
-                //use direction
+                if (_roverService.GetDirectionFromString(command, _roverService.GetTempRover(), out Directions direction))
+                {
+                    _roverService.GetRover().Direction = direction;
+                    commandsToRemove.Add(command);
+                }
+                else if (_roverService.CheckValidMovements(command, _roverService.GetTempRover(), out string intError))
+                {
+                    _roverService.SetRoverCoordinates(_roverService.GetRover(), command);
+                    commandsToRemove.Add(command);
+                }
+                else
+                {
+                    commandsToRemove.Add(command);
+                    MessageBox.Show(String.IsNullOrEmpty(intError) ? "Invalid Command, aborting" : intError);
+                    break;
+                }
             }
-            //must be a number so we check if we will go out of bounds
 
-            
-
-            Rover tempRover = _roverService.GetRover();
+            foreach (string usedCommand in commandsToRemove)
+            {
+                _commands.Remove(usedCommand);
+            }
 
             Label roverLabel = (Label)_form.Controls.Find("roverLabel", true).First();
 
-            roverLabel.Text = String.Format("The rover is at {0}{1}, {2}", tempRover.Coordinates[0], tempRover.Coordinates[1], tempRover.GetDirection());
+            Rover rover = _roverService.GetRover();
+
+            roverLabel.Text = String.Format("The rover is at {0}{1}, {2}", rover.y, rover.x, rover.GetDirection());
 
             SetCommandListBox();
 
@@ -151,8 +170,17 @@ namespace MarsRover.Forms
             int count = 1;
             foreach (string command in _commands)
             {
-                PopulateCommandListBox(command, count, commandListBox);
-                count++;
+                if(int.TryParse(command, out int unusedNumber))
+                {
+                    PopulateCommandListBox(String.Format("{0}m", command), count, commandListBox);
+                    count++;
+                }
+                else
+                {
+                    PopulateCommandListBox(command, count, commandListBox);
+                    count++;
+                }
+
             }
         }
 

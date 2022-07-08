@@ -8,12 +8,14 @@ namespace MarsRover.Models
 {
     public class Rover
     {
-        public int[] Coordinates { get; set; }
+        public int x;
+        public int y;
         public Directions Direction { get; set; }
 
         public Rover()
         {
-            Coordinates = new int[2] { 0, 1 };
+            x = 1;
+            y = 0;
             Direction = Directions.South;
         }
 
@@ -43,12 +45,12 @@ namespace MarsRover.Models
 
         public void SetX(int x)
         {
-            this.Coordinates[1] = x;
+            this.x = x;
         }
 
         public void SetY(int y)
         {
-            this.Coordinates[0] = y;
+            this.y = y;
         }
     }
 }

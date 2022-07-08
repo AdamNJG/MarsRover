@@ -9,7 +9,6 @@ namespace MarsRover
 {
     public static class Extensions
     {
-
         public static T DeepCopy<T>(this T input)
         {
             string result = JsonConvert.SerializeObject(input);
